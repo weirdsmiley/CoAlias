@@ -34,3 +34,5 @@
 /build*
 /.cache
 /objects
+/TODO.md
+/*.patch
