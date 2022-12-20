@@ -2,6 +2,61 @@
 
 namespace coalias {
 
+// Collect all access paths in a module
+class AccessPaths {
+  Function &F;
+  SmallVector<Argument *, 4> *AccP;
+
+public:
+  SmallVector<Argument*, 4> findAccessPaths(Function &F) {
+    for (auto &B: F) {
+      for (auto &I: B) {
+        // If I in CallInst, then first collect all arguments of call-site
+        if (auto *CI = dyn_cast<CallInst>(&I)) {
+          // Collect all function arguments
+          Function *CalledFunc = I.getFunction();
+          SmallVector<Argument *, 4> CIArgs;
+          for (auto &ArgIter : CalledFunc->args()) {
+            CIArgs.push_back(&ArgIter);
+            errs() << ArgIter << "\t";
+          }
+        }
+      }
+    }
+  }
+
+
+  AccessPaths(Function &F) : F(F), AccP(nullptr) { }
+};
+
+// // This class with store 
+// class CoAliasInfo {
+//   bool Modified;
+//   SmallVector<Argument *, 0> VArgs;
+//   SmallVector<SmallVector<Argument *, 0>> NoAliasArgs;
+// };
+
+// This method implements what the pass does
+void visitor(Module &M, ModuleAnalysisManager &MAM) {
+    errs() << "(llvm-tutor) Hello from: "<< M.getName() << "\n";
+    for (auto &F: M) {
+      AccessPaths *AP = new AccessPaths(F);
+      auto CIArgs = AP->findAccessPaths(F);
+      auto &AA = MAM.getResult<AAManager>(M);
+
+      // check for aliasing 
+      for (auto X : CIArgs) {
+        for (auto Y : CIArgs) {
+          if (X != Y) {
+            if (AA.alias(X, Y) == AliasResult::NoAlias) {
+              // copy function and replace call-site
+            }
+          }
+        }
+      }
+    }
+}
+
 CoAliasAnalysis::Result CoAliasAnalysis::run(Function &F,
                                              FunctionAnalysisManager &FAM) {
 

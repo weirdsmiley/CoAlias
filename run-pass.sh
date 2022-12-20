@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# CC=clang
-# OPT=opt
-CC=~/workspace/llvm/llvm-project/build/bin/clang
-OPT=~/workspace/llvm/llvm-project/build/bin/opt
+CC=clang
+OPT=opt
+# CC=~/workspace/llvm/llvm-project.git/build/bin/clang
+# OPT=~/workspace/llvm/llvm-project.git/build/bin/opt
 CFLAGS="-Xclang -disable-O0-optnone -S -emit-llvm"
 OPTFLAGS="-O2 -S"
 PLUG="--load-pass-plugin=build/CoAliasPass/libLLVMCoAliasPass.so"
